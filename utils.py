@@ -6,6 +6,8 @@ import os.path
 import time
 import shutil
 from threading import Timer
+import functools
+import traceback
 
 
 def start_logger(workdir):
@@ -65,10 +67,10 @@ def scriptVersionGit(version, directory, script_path):
 	print 'Version ' + version
 	os.chdir(os.path.dirname(script_path))
 	command = ['git', 'log', '-1', '--date=local', '--pretty=format:"%h (%H) - Commit by %cn, %cd) : %s"']
-	run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, None)
+	run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, None, False)
 	print stdout
 	command = ['git', 'remote', 'show', 'origin']
-	run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, None)
+	run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, None, False)
 	print stdout
 	os.chdir(directory)
 
@@ -88,15 +90,16 @@ def check_create_directory(directory):
 		os.makedirs(directory)
 
 
-# USADO
-def runCommandPopenCommunicate(command, shell_True, timeout_sec_None):
+def runCommandPopenCommunicate(command, shell_True, timeout_sec_None, print_comand_True):
 	run_successfully = False
 	if isinstance(command, basestring):
 		command = shlex.split(command)
 	else:
 		command = shlex.split(' '.join(command))
 
-	print 'Running: ' + ' '.join(command)
+	if print_comand_True:
+		print 'Running: ' + ' '.join(command)
+
 	if shell_True:
 		command = ' '.join(command)
 		proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -113,6 +116,8 @@ def runCommandPopenCommunicate(command, shell_True, timeout_sec_None):
 	if proc.returncode == 0:
 		run_successfully = True
 	else:
+		if not print_comand_True:
+			print 'Running: ' + str(command)
 		print 'STDOUT'
 		print stdout.decode("utf-8")
 		print 'STDERR'
@@ -150,7 +155,7 @@ def checkPrograms(programs_version_dictionary):
 	listMissings = []
 	for program in programs:
 		which_program[1] = program
-		run_successfully, stdout, stderr = runCommandPopenCommunicate(which_program, False, None)
+		run_successfully, stdout, stderr = runCommandPopenCommunicate(which_program, False, None, False)
 		if not run_successfully:
 			listMissings.append(program + ' not found in PATH.')
 		else:
@@ -158,7 +163,7 @@ def checkPrograms(programs_version_dictionary):
 				print program + ' (impossible to determine programme version) found at: ' + stdout.splitlines()[0]
 			else:
 				check_version = [stdout.splitlines()[0], programs[program][0]]
-				run_successfully, stdout, stderr = runCommandPopenCommunicate(check_version, False, None)
+				run_successfully, stdout, stderr = runCommandPopenCommunicate(check_version, False, None, False)
 				if stdout == '':
 					stdout = stderr
 				if program == 'bunzip2':
@@ -184,3 +189,14 @@ def checkPrograms(programs_version_dictionary):
 					if version_line != programs[program][2]:
 						listMissings.append('It is required ' + program + ' with version ' + programs[program][1] + ' ' + programs[program][2])
 	return listMissings
+
+
+def trace_unhandled_exceptions(func):
+	@functools.wraps(func)
+	def wrapped_func(*args, **kwargs):
+		try:
+			func(*args, **kwargs)
+		except:
+			print 'Exception in ' + func.__name__
+			traceback.print_exc()
+	return wrapped_func
