@@ -367,20 +367,23 @@ def runDownload(ena_id, download_paired_type, asperaKey, outdir, download_cram_b
 	download_dir = os.path.join(outdir, 'download', '')
 	utils.check_create_directory(download_dir)
 
-	readRunInfo = getReadRunInfo(ena_id)
-	downloadInformation = getDownloadInformation(readRunInfo)
-	downloadInformation = check_correct_links(downloadInformation)
-	sequencingInformation = getSequencingInformation(readRunInfo)
-
 	run_successfully = False
 	downloaded_files = None
-	if instrument_platform.lower() == 'all' or sequencingInformation['instrument_platform'].lower() == instrument_platform.lower():
-		if download_paired_type.lower() == 'both' or sequencingInformation['library_layout'].lower() == download_paired_type.lower():
-			run_successfully, cram_index_run_successfully = downloadFiles(downloadInformation, sequencingInformation, download_paired_type, asperaKey, download_dir, download_cram_bam_True)
-			if run_successfully:
-				run_successfully, downloaded_files = get_fastq_files(download_dir, cram_index_run_successfully, threads, sequencingInformation['library_layout'])
-			if run_successfully and downloaded_files is not None:
-				run_successfully, downloaded_files = rename_move_files(downloaded_files, sequencingInformation['run_accession'], outdir, sequencingInformation['library_layout'])
+	sequencingInformation = {'run_accession': None, 'instrument_platform': None, 'instrument_model': None, 'library_layout': None, 'library_source': None}
+
+	readRunInfo = getReadRunInfo(ena_id)
+	if len(readRunInfo) == 2:
+		downloadInformation = getDownloadInformation(readRunInfo)
+		downloadInformation = check_correct_links(downloadInformation)
+		sequencingInformation = getSequencingInformation(readRunInfo)
+
+		if instrument_platform.lower() == 'all' or sequencingInformation['instrument_platform'].lower() == instrument_platform.lower():
+			if download_paired_type.lower() == 'both' or sequencingInformation['library_layout'].lower() == download_paired_type.lower():
+				run_successfully, cram_index_run_successfully = downloadFiles(downloadInformation, sequencingInformation, download_paired_type, asperaKey, download_dir, download_cram_bam_True)
+				if run_successfully:
+					run_successfully, downloaded_files = get_fastq_files(download_dir, cram_index_run_successfully, threads, sequencingInformation['library_layout'])
+				if run_successfully and downloaded_files is not None:
+					run_successfully, downloaded_files = rename_move_files(downloaded_files, sequencingInformation['run_accession'], outdir, sequencingInformation['library_layout'])
 
 	utils.removeDirectory(download_dir)
 
