@@ -87,7 +87,7 @@ def runGetSeqENA(args):
 					utils.removeDirectory(ena_id_folder)
 					print ena_id + ' was not downloaded'
 
-				writer.write('\t'.join([ena_id, sequencingInformation['run_accession'], str(run_successfully), str(';'.join(downloadedFiles) if downloadedFiles is not None else downloadedFiles), sequencingInformation['instrument_platform'], sequencingInformation['instrument_model'], sequencingInformation['library_layout'], sequencingInformation['library_source']]) + '\n')
+				writer.write('\t'.join([ena_id, str(sequencingInformation['run_accession']), str(run_successfully), str(';'.join(downloadedFiles) if downloadedFiles is not None else downloadedFiles), str(sequencingInformation['instrument_platform']), str(sequencingInformation['instrument_model']), str(sequencingInformation['library_layout']), str(sequencingInformation['library_source'])]) + '\n')
 			else:
 					break
 
