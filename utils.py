@@ -66,14 +66,18 @@ def general_information(logfile, version):
 
 def scriptVersionGit(version, directory, script_path):
     print 'Version ' + version
-    os.chdir(os.path.dirname(script_path))
-    command = ['git', 'log', '-1', '--date=local', '--pretty=format:"%h (%H) - Commit by %cn, %cd) : %s"']
-    run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, None, False)
-    print stdout
-    command = ['git', 'remote', 'show', 'origin']
-    run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, None, False)
-    print stdout
-    os.chdir(directory)
+
+    try:
+        os.chdir(os.path.dirname(script_path))
+        command = ['git', 'log', '-1', '--date=local', '--pretty=format:"%h (%H) - Commit by %cn, %cd) : %s"']
+        run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, 15, False)
+        print stdout
+        command = ['git', 'remote', 'show', 'origin']
+        run_successfully, stdout, stderr = runCommandPopenCommunicate(command, False, 15, False)
+        print stdout
+        os.chdir(directory)
+    except:
+        print 'HARMLESS WARNING: git command possibly not found. The GitHub repository information will not be obtained.'
 
 
 def runTime(start_time):
