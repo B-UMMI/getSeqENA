@@ -6,9 +6,9 @@
 getSeqENA.py - Get fastq files from ENA using ENA IDs
 <https://github.com/B-UMMI/getSeqENA/>
 
-Copyright (C) 2016 Miguel Machado <mpmachado@medicina.ulisboa.pt>
+Copyright (C) 2017 Miguel Machado <mpmachado@medicina.ulisboa.pt>
 
-Last modified: November 17, 2016
+Last modified: October 04, 2017
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import sys
 import utils
 import time
 
-version = '1.1'
+version = '1.2'
 
 
 def requiredPrograms(args):
@@ -67,7 +67,7 @@ def runGetSeqENA(args):
     runs_successfully = 0
     with open(os.path.join(outdir, 'getSeqENA.report.txt'), 'wt') as writer:
         header_sequencing = ['run_accession', 'instrument_platform', 'instrument_model', 'library_layout', 'library_source', 'extra_run_accession', 'nominal_length', 'read_count', 'base_count', 'date_download']
-        writer.write('#sample' + '\t'.join(header_sequencing) + '\n')
+        writer.write('#sample' + '\t' + '\t'.join(header_sequencing) + '\n')
         for ena_id in listENA_IDs:
             if args.maximumSamples is None:
                 maximumSamples = runs_successfully + 1
