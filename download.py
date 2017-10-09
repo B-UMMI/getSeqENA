@@ -90,7 +90,7 @@ def downloadWithAspera(aspera_file_path, asperaKey, outdir, pickle_prefix, SRA, 
 
 @utils.trace_unhandled_exceptions
 def downloadWithWget(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
-    command = ['wget', '--tries=1', '', '-O', '']
+    command = ['wget', '--tries=2', '', '-O', '']
     if not SRA:
         command[2] = ftp_file_path
         file_download = ftp_file_path.rsplit('/', 1)[1]
@@ -108,7 +108,7 @@ def downloadWithWget(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
 @utils.trace_unhandled_exceptions
 def downloadWithCurl(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
     file_download = ftp_file_path.rsplit('/', 1)[1]
-    command = ['curl', '--retry', '1', '', '-O', '']
+    command = ['curl', '--retry', '2', '', '-O', '']
     if not SRA:
         command[2] = ftp_file_path
         file_download = ftp_file_path.rsplit('/', 1)[1]
@@ -154,47 +154,42 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
     run_successfully = False
     download_SRA = False
 
-    if asperaKey is not None:
-        if not SRA and downloadInformation_type['aspera'] is not None:
+    if asperaKey is not None and downloadInformation_type['aspera'] is not None:
+        pool = multiprocessing.Pool(processes=2)
+        for file_download in downloadInformation_type['aspera']:
+            pool.apply_async(downloadWithAspera, args=(file_download, asperaKey, outdir, pickle_prefix, SRA, ena_id,))
+        pool.close()
+        pool.join()
+        run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+    if not run_successfully and downloadInformation_type['ftp'] is not None:
+        if curl_installed():
             pool = multiprocessing.Pool(processes=2)
-            for file_download in downloadInformation_type['aspera']:
-                pool.apply_async(downloadWithAspera, args=(file_download, asperaKey, outdir, pickle_prefix, SRA, ena_id,))
+            for file_download in downloadInformation_type['ftp']:
+                pool.apply_async(downloadWithCurl, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
             pool.close()
             pool.join()
             run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
-        if SRA or SRAopt:
-            if not run_successfully:
-                downloadWithAspera(None, asperaKey, outdir, pickle_prefix, SRA or SRAopt, ena_id)
-                run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
-                if run_successfully:
-                    download_SRA = True
+        if not run_successfully:
+            pool = multiprocessing.Pool(processes=2)
+            for file_download in downloadInformation_type['ftp']:
+                pool.apply_async(downloadWithWget, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
+            pool.close()
+            pool.join()
+            run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
 
-    if not run_successfully:
-        if not SRA and downloadInformation_type['ftp'] is not None:
+    if not run_successfully and (SRA or SRAopt):
+        if asperaKey is not None:
+            downloadWithAspera(None, asperaKey, outdir, pickle_prefix, SRA or SRAopt, ena_id)
+            run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+        if not run_successfully:
             if curl_installed():
-                pool = multiprocessing.Pool(processes=2)
-                for file_download in downloadInformation_type['ftp']:
-                    pool.apply_async(downloadWithCurl, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
-                pool.close()
-                pool.join()
+                downloadWithCurl(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
                 run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
             if not run_successfully:
-                pool = multiprocessing.Pool(processes=2)
-                for file_download in downloadInformation_type['ftp']:
-                    pool.apply_async(downloadWithWget, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
-                pool.close()
-                pool.join()
+                downloadWithWget(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
                 run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
-        if SRA or SRAopt:
-            if not run_successfully:
-                if curl_installed():
-                    downloadWithCurl(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
-                    run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
-                if not run_successfully:
-                    downloadWithWget(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
-                    run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
-                if run_successfully:
-                    download_SRA = True
+        if run_successfully:
+            download_SRA = True
 
     return run_successfully, download_SRA
 
