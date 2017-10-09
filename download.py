@@ -110,12 +110,12 @@ def downloadWithCurl(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
     file_download = ftp_file_path.rsplit('/', 1)[1]
     command = ['curl', '--retry', '2', '', '-O', '']
     if not SRA:
-        command[2] = ftp_file_path
+        command[3] = ftp_file_path
         file_download = ftp_file_path.rsplit('/', 1)[1]
         command[5] = os.path.join(outdir, file_download)
         pickle = pickle_prefix + '.' + file_download
     else:
-        command[2] = 'ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/{a}/{b}/{c}/{c}.sra'.format(a=ena_id[:3], b=ena_id[:6], c=ena_id)
+        command[3] = 'ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/{a}/{b}/{c}/{c}.sra'.format(a=ena_id[:3], b=ena_id[:6], c=ena_id)
         command[5] = os.path.join(outdir, ena_id)
         pickle = pickle_prefix + '.' + ena_id
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
