@@ -57,7 +57,8 @@
 
     SRA download options (one of the following):
       --SRA                 Tells getSeqENA.py to download reads in fastq format
-                            from NCBI SRA database (default: False)
+                            only from NCBI SRA database (not recommended)
+                            (default: False)
       --SRAopt              Tells getSeqENA.py to download reads from NCBI SRA
                             if the download from ENA fails
 

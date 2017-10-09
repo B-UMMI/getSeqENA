@@ -120,7 +120,7 @@ def main():
     parser_optional.add_argument('--maximumSamples', type=int, metavar='N', help='Tells getSeqENA.py to only download files for N samples', required=False)
 
     parser_optional_SRA = parser.add_mutually_exclusive_group()
-    parser_optional_SRA.add_argument('--SRA', action='store_true', help='Tells getSeqENA.py to download reads in fastq format from NCBI SRA database')
+    parser_optional_SRA.add_argument('--SRA', action='store_true', help='Tells getSeqENA.py to download reads in fastq format only from NCBI SRA database (not recommended)')
     parser_optional_SRA.add_argument('--SRAopt', action='store_true', help='Tells getSeqENA.py to download reads from NCBI SRA if the download from ENA fails')
 
     parser.set_defaults(func=runGetSeqENA)

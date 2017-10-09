@@ -154,28 +154,29 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
     run_successfully = False
     download_SRA = False
 
-    if asperaKey is not None and downloadInformation_type['aspera'] is not None:
-        pool = multiprocessing.Pool(processes=2)
-        for file_download in downloadInformation_type['aspera']:
-            pool.apply_async(downloadWithAspera, args=(file_download, asperaKey, outdir, pickle_prefix, SRA, ena_id,))
-        pool.close()
-        pool.join()
-        run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
-    if not run_successfully and downloadInformation_type['ftp'] is not None:
-        if curl_installed():
+    if not SRA:
+        if asperaKey is not None and downloadInformation_type['aspera'] is not None:
             pool = multiprocessing.Pool(processes=2)
-            for file_download in downloadInformation_type['ftp']:
-                pool.apply_async(downloadWithCurl, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
+            for file_download in downloadInformation_type['aspera']:
+                pool.apply_async(downloadWithAspera, args=(file_download, asperaKey, outdir, pickle_prefix, SRA, ena_id,))
             pool.close()
             pool.join()
             run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
-        if not run_successfully:
-            pool = multiprocessing.Pool(processes=2)
-            for file_download in downloadInformation_type['ftp']:
-                pool.apply_async(downloadWithWget, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
-            pool.close()
-            pool.join()
-            run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+        if not run_successfully and downloadInformation_type['ftp'] is not None:
+            if curl_installed():
+                pool = multiprocessing.Pool(processes=2)
+                for file_download in downloadInformation_type['ftp']:
+                    pool.apply_async(downloadWithCurl, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
+                pool.close()
+                pool.join()
+                run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+            if not run_successfully:
+                pool = multiprocessing.Pool(processes=2)
+                for file_download in downloadInformation_type['ftp']:
+                    pool.apply_async(downloadWithWget, args=(file_download, outdir, pickle_prefix, SRA, ena_id,))
+                pool.close()
+                pool.join()
+                run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
 
     if not run_successfully and (SRA or SRAopt):
         if asperaKey is not None:
