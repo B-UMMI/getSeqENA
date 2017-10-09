@@ -153,7 +153,7 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
             run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
         if SRA or SRAopt:
             if not run_successfully:
-                downloadWithAspera(file_download, asperaKey, outdir, pickle_prefix, SRA, ena_id)
+                downloadWithAspera(None, asperaKey, outdir, pickle_prefix, SRA, ena_id)
                 run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
                 if run_successfully:
                     download_SRA = True
@@ -177,10 +177,10 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
         if SRA or SRAopt:
             if not run_successfully:
                 if curl_installed():
-                    downloadWithCurl(file_download, outdir, pickle_prefix, SRA, ena_id)
+                    downloadWithCurl(None, outdir, pickle_prefix, SRA, ena_id)
                     run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
                 if not run_successfully:
-                    downloadWithWget(file_download, outdir, pickle_prefix, SRA, ena_id)
+                    downloadWithWget(None, outdir, pickle_prefix, SRA, ena_id)
                     run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
                 if run_successfully:
                     download_SRA = True
