@@ -78,38 +78,49 @@ def downloadWithAspera(aspera_file_path, asperaKey, outdir, pickle_prefix, SRA, 
     if not SRA:
         command[4] = '-P33001'
         command[7] = str('era-fasp@' + aspera_file_path)
+        pickle = pickle_prefix + '.' + aspera_file_path.rsplit('/', 1)[1]
     else:
         command[7] = 'anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/{a}/{b}/{c}/{c}.sra'.format(a=ena_id[:3], b=ena_id[:6], c=ena_id)
+        pickle = pickle_prefix + '.' + ena_id
 
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
 
-    utils.saveVariableToPickle(run_successfully, outdir, str(pickle_prefix + '.' + aspera_file_path.rsplit('/', 1)[1]))
+    utils.saveVariableToPickle(run_successfully, outdir, pickle)
 
 
 @utils.trace_unhandled_exceptions
 def downloadWithWget(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
-    file_download = ftp_file_path.rsplit('/', 1)[1]
-    command = ['wget', '--tries=1', '', '-O', os.path.join(outdir, file_download)]
+    command = ['wget', '--tries=1', '', '-O', '']
     if not SRA:
         command[2] = ftp_file_path
+        file_download = ftp_file_path.rsplit('/', 1)[1]
+        command[4] = os.path.join(outdir, file_download)
+        pickle = pickle_prefix + '.' + file_download
     else:
         command[2] = 'ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/{a}/{b}/{c}/{c}.sra'.format(a=ena_id[:3], b=ena_id[:6], c=ena_id)
+        command[4] = os.path.join(outdir, ena_id)
+        pickle = pickle_prefix + '.' + ena_id
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
 
-    utils.saveVariableToPickle(run_successfully, outdir, str(pickle_prefix + '.' + file_download))
+    utils.saveVariableToPickle(run_successfully, outdir, pickle)
 
 
 @utils.trace_unhandled_exceptions
 def downloadWithCurl(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
     file_download = ftp_file_path.rsplit('/', 1)[1]
-    command = ['curl', '--retry', '1', '', '-O', os.path.join(outdir, file_download)]
+    command = ['curl', '--retry', '1', '', '-O', '']
     if not SRA:
         command[2] = ftp_file_path
+        file_download = ftp_file_path.rsplit('/', 1)[1]
+        command[5] = os.path.join(outdir, file_download)
+        pickle = pickle_prefix + '.' + file_download
     else:
         command[2] = 'ftp://ftp-trace.ncbi.nih.gov/sra/sra-instant/reads/ByRun/sra/{a}/{b}/{c}/{c}.sra'.format(a=ena_id[:3], b=ena_id[:6], c=ena_id)
+        command[5] = os.path.join(outdir, ena_id)
+        pickle = pickle_prefix + '.' + ena_id
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
 
-    utils.saveVariableToPickle(run_successfully, outdir, str(pickle_prefix + '.' + file_download))
+    utils.saveVariableToPickle(run_successfully, outdir, pickle)
 
 
 def getPickleRunSuccessfully(directory, pickle_prefix):
@@ -153,7 +164,7 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
             run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
         if SRA or SRAopt:
             if not run_successfully:
-                downloadWithAspera(None, asperaKey, outdir, pickle_prefix, SRA, ena_id)
+                downloadWithAspera(None, asperaKey, outdir, pickle_prefix, SRA or SRAopt, ena_id)
                 run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
                 if run_successfully:
                     download_SRA = True
@@ -177,10 +188,10 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
         if SRA or SRAopt:
             if not run_successfully:
                 if curl_installed():
-                    downloadWithCurl(None, outdir, pickle_prefix, SRA, ena_id)
+                    downloadWithCurl(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
                     run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
                 if not run_successfully:
-                    downloadWithWget(None, outdir, pickle_prefix, SRA, ena_id)
+                    downloadWithWget(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
                     run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
                 if run_successfully:
                     download_SRA = True
@@ -205,10 +216,10 @@ def downloadFiles(downloadInformation, asperaKey, outdir, download_cram_bam_True
                         cram_bam = True
                         break
                 if not cram_bam:
-                    run_successfully, download_SRA = download(downloadInformation['submitted'], asperaKey, outdir, SRA, SRAopt, ena_id)
+                    run_successfully, download_SRA = download(downloadInformation['submitted'], asperaKey, outdir, False, False, ena_id)
 
             elif download_cram_bam_True:
-                run_successfully, download_SRA = download(downloadInformation['submitted'], asperaKey, outdir, SRA, SRAopt, ena_id)
+                run_successfully, download_SRA = download(downloadInformation['submitted'], asperaKey, outdir, False, False, ena_id)
                 if run_successfully and downloadInformation['cram_index'] is not None:
                     cram_index_run_successfully = download(downloadInformation['cram_index'], asperaKey, outdir, False, False, ena_id)
     if not run_successfully and (SRA or SRAopt):
