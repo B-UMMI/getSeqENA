@@ -107,7 +107,6 @@ def downloadWithWget(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
 
 @utils.trace_unhandled_exceptions
 def downloadWithCurl(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
-    file_download = ftp_file_path.rsplit('/', 1)[1]
     command = ['curl', '--retry', '2', '', '-O', '']
     if not SRA:
         command[3] = ftp_file_path
