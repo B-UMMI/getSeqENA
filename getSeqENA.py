@@ -40,6 +40,8 @@ def requiredPrograms(args):
         programs_version_dictionary['ascp'] = ['--version', '>=', '3.6.1']
     if args.downloadCramBam:
         programs_version_dictionary['samtools'] = ['--version', '==', '1.3.1']
+    if args.SRA or args.SRAopt:
+        programs_version_dictionary['fastq-dump'] = ['--version', '>=', '2.8.2']
     missingPrograms = utils.checkPrograms(programs_version_dictionary)
     if len(missingPrograms) > 0:
         sys.exit('\n' + 'Errors:' + '\n' + '\n'.join(missingPrograms))
@@ -81,7 +83,7 @@ def runGetSeqENA(args):
                 utils.check_create_directory(ena_id_folder)
 
                 sequencingInformation = {'run_accession': None, 'instrument_platform': None, 'instrument_model': None, 'library_layout': None, 'library_source': None, 'extra_run_accession': None, 'nominal_length': None, 'read_count': None, 'base_count': None, 'date_download': None}
-                time_taken, run_successfully, fastq_files, sequencingInformation = download.runDownload(ena_id, args.downloadLibrariesType, asperaKey, ena_id_folder, args.downloadCramBam, args.threads, args.downloadInstrumentPlatform)
+                time_taken, run_successfully, fastq_files, sequencingInformation = download.runDownload(ena_id, args.downloadLibrariesType, asperaKey, ena_id_folder, args.downloadCramBam, args.threads, args.downloadInstrumentPlatform, args.SRA, args.SRAopt)
 
                 if run_successfully:
                     runs_successfully += 1
@@ -116,6 +118,10 @@ def main():
     parser_optional.add_argument('--downloadCramBam', action='store_true', help='Tells getSeqENA.py to also download cram/bam files and convert them to fastq files')
     parser_optional.add_argument('--downloadInstrumentPlatform', type=str, metavar='ILLUMINA', help='Tells getSeqENA.py to download files with specific library layout', choices=['ILLUMINA', 'ALL'], required=False, default='ILLUMINA')
     parser_optional.add_argument('--maximumSamples', type=int, metavar='N', help='Tells getSeqENA.py to only download files for N samples', required=False)
+
+    parser_optional_SRA = parser.add_mutually_exclusive_group()
+    parser_optional_SRA.add_argument('--SRA', action='store_true', help='Tells getSeqENA.py to download reads in fastq format from NCBI SRA database')
+    parser_optional_SRA.add_argument('--SRAopt', action='store_true', help='Tells getSeqENA.py to download reads from NCBI SRA if the download from ENA fails')
 
     parser.set_defaults(func=runGetSeqENA)
 

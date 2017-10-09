@@ -6,7 +6,8 @@
 - Aspera Connect 2 >= v3.6.1
 - gzip >= v1.6 (normally found in Linux OS) (important for bam/cram conversion into fastq)
 - wget (normally found in Linux OS)
-- curl
+- curl (optional)
+- [SRA toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software) >= v2.8.2 (optional)
 
 #### Input
  To interact directly with ENA, a list of IDs to download needs to be passed to getSeqENA. This can be done through the -l option, or to download all the reads from a given taxon, though the --taxon option.
@@ -19,6 +20,7 @@
                         [--downloadLibrariesType PAIRED] [--downloadCramBam]
                         [--downloadInstrumentPlatform ILLUMINA]
                         [--maximumSamples N]
+                        [--SRA | --SRAopt]
 
     Get fastq files from ENA using ENA IDs
 
@@ -53,6 +55,12 @@
       --maximumSamples N    Tells getSeqENA.py to only download files for N
                             samples (default: None)
 
+    SRA download options (one of the following):
+      --SRA                 Tells getSeqENA.py to download reads in fastq format
+                            from NCBI SRA database (default: False)
+      --SRAopt              Tells getSeqENA.py to download reads from NCBI SRA
+                            if the download from ENA fails
+
 #### Outputs
 **run.*.log**
 getSeqENA running log file.
@@ -75,4 +83,3 @@ Report for each sample downloaded, retrieved from ENA data warehouse. It contain
 
 Miguel Machado
 <mpmachado@medicina.ulisboa.pt>
-
