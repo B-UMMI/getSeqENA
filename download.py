@@ -217,8 +217,9 @@ def downloadFiles(downloadInformation, asperaKey, outdir, download_cram_bam_True
                 run_successfully, download_SRA = download(downloadInformation['submitted'], asperaKey, outdir, False, False, ena_id)
                 if run_successfully and downloadInformation['cram_index'] is not None:
                     cram_index_run_successfully = download(downloadInformation['cram_index'], asperaKey, outdir, False, False, ena_id)
+
     if not run_successfully and (SRA or SRAopt):
-        run_successfully, download_SRA = download(downloadInformation['fastq'], asperaKey, outdir, SRA, SRAopt, ena_id)
+        run_successfully, download_SRA = download(downloadInformation['fastq'], asperaKey, outdir, True, SRAopt, ena_id)
 
     return run_successfully, cram_index_run_successfully, download_SRA
 
