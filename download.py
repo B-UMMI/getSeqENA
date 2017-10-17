@@ -460,12 +460,12 @@ def runDownload(ena_id, download_paired_type, asperaKey, outdir, download_cram_b
     downloaded_files = None
     sequencingInformation = {'run_accession': None, 'instrument_platform': None, 'instrument_model': None, 'library_layout': None, 'library_source': None, 'extra_run_accession': None, 'nominal_length': None, 'read_count': None, 'base_count': None, 'date_download': None}
 
+    sequencingInformation['date_download'] = time.strftime("%Y-%m-%d")
     readRunInfo = getReadRunInfo(ena_id)
     if readRunInfo is not None:
         downloadInformation = getDownloadInformation(readRunInfo)
         downloadInformation = check_correct_links(downloadInformation)
         sequencingInformation = getSequencingInformation(readRunInfo)
-        sequencingInformation['date_download'] = time.strftime("%Y-%m-%d")
 
         if instrument_platform.lower() == 'all' or (sequencingInformation['instrument_platform'] is not None and sequencingInformation['instrument_platform'].lower() == instrument_platform.lower()):
             if download_paired_type.lower() == 'both' or (sequencingInformation['library_layout'] is not None and sequencingInformation['library_layout'].lower() == download_paired_type.lower()):
@@ -476,6 +476,9 @@ def runDownload(ena_id, download_paired_type, asperaKey, outdir, download_cram_b
                     run_successfully, downloaded_files = get_fastq_files(download_dir, cram_index_run_successfully, threads, sequencingInformation['library_layout'])
                 if run_successfully and downloaded_files is not None:
                     run_successfully, downloaded_files = rename_move_files(downloaded_files, sequencingInformation['run_accession'], outdir, sequencingInformation['library_layout'])
+    else:
+        if SRA or SRAopt:
+            run_successfully, cram_index_run_successfully, download_SRA = downloadFiles({'fastq': None, 'submitted': None, 'cram_index': None}, asperaKey, download_dir, download_cram_bam_True, SRA, SRAopt, ena_id)
 
     utils.removeDirectory(download_dir)
 
