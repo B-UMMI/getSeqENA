@@ -479,6 +479,16 @@ def runDownload(ena_id, download_paired_type, asperaKey, outdir, download_cram_b
     else:
         if SRA or SRAopt:
             run_successfully, cram_index_run_successfully, download_SRA = downloadFiles({'fastq': None, 'submitted': None, 'cram_index': None}, asperaKey, download_dir, download_cram_bam_True, SRA, SRAopt, ena_id)
+            if download_SRA:
+                run_successfully = sra_2_fastq(download_dir, ena_id)
+            if run_successfully:
+                run_successfully, downloaded_files = get_fastq_files(download_dir, cram_index_run_successfully, threads, 'paired')
+                if not run_successfully:
+                    run_successfully, downloaded_files = get_fastq_files(download_dir, cram_index_run_successfully, threads, 'single')
+            if run_successfully and downloaded_files is not None:
+                run_successfully, downloaded_files = rename_move_files(downloaded_files, ena_id, outdir, 'paired')
+                if not run_successfully:
+                    run_successfully, downloaded_files = rename_move_files(downloaded_files, ena_id, outdir, 'single')
 
     utils.removeDirectory(download_dir)
 
