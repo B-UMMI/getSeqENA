@@ -444,20 +444,14 @@ def rename_move_files(list_files, new_name, outdir, download_paired_type):
 
 @utils.trace_unhandled_exceptions
 def rename_header_sra(fastq):
-    command = ['awk', "'", "{if(NR%4==1)", '$0=gensub(/./,', '"/",', '2);', "print}'", '|', 'gzip', '-1', '>', str(fastq + '.gz')]
+    command = ['awk', '\'{if(NR%4==1) $0=gensub(/\./, \"/\", 2); print}\'', fastq, '|', 'gzip', '-1', '>', str(fastq + '.gz')]
     print 'Running: ' + str(' '.join(command))
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    stdout, stderr = proc.communicate()
-    if proc.returncode == 0:
+    return_code = subprocess.call(' '.join(command), shell=True)
+    if return_code == 0:
         run_successfully = True
     else:
         run_successfully = False
-        if len(stdout) > 0:
-            print 'STDOUT'
-            print stdout.decode("utf-8")
-        if len(stderr) > 0:
-            print 'STDERR'
-            print stderr.decode("utf-8")
+        print 'Something went wrong with command: {command}'.format(commad=' '.join(command))
 
     return run_successfully
 
