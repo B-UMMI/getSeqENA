@@ -441,9 +441,41 @@ def rename_move_files(list_files, new_name, outdir, download_paired_type):
     return run_successfully, list_new_files
 
 
+@utils.trace_unhandled_exceptions
+def rename_header_sra(fastq):
+    command = ['awk', "'{if(NR%4==1)", '$0=gensub(/./,', '"/",', '2);', "print}'", '|', 'gzip', '-1', '>', str(fastq + '.gz')]
+    run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, True, None, True)
+    return run_successfully
+
+# awk '{if(NR%4==1) $0=gensub(/./, "/", 2); print}' | gzip -1 > teste.gz
+# awk '{if(NR%4==1){gsub(/_/,"/")}; print}''
+# awk '{if(NR%4==1) $0=sprintf("@1_%d",(1+i++)); print;}' | gzip -c > another.fastq.gz
+#
+# gensub(/(.*)./,"\\1\/","",$3)
+# gensub(/(.*)./,"\\1\/","")
+# awk '{if(NR%4==1) {gensub(/(.*)./,"\\1\/","")}; print}' file | head -16
+#
+#
+# awk '{if(NR%4==1) gensub(/./, "/", 1); print}'
+#
+#  sed 's/\(.*\),/\1./'
+# awk '{if(NR%4==1) {gsub("","/")}; print}''
+# awk '{print (NR%4 == 1) ? "@1_" ++i : $0}'
+
+
 def sra_2_fastq(download_dir, ena_id):
-    command = ['fastq-dump', '-I', '-O', download_dir, '--gzip', '--split-files', '{download_dir}{ena_id}.sra'.format(download_dir=download_dir, ena_id=ena_id)]
+    command = ['fastq-dump', '-I', '-O', download_dir, '--split-files', '{download_dir}{ena_id}.sra'.format(download_dir=download_dir, ena_id=ena_id)]
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
+    if run_successfully:
+        files = [os.path.join(download_dir, f) for f in os.listdir(download_dir) if not f.startswith('.') and os.path.isfile(os.path.join(download_dir, f))]
+
+        pool = multiprocessing.Pool(processes=2)
+        results = []
+        p = pool.map_async(rename_header_sra, files, callback=results.extend)
+        p.wait()
+
+        run_successfully = all(results)
+
     return run_successfully
 
 
