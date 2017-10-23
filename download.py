@@ -4,6 +4,7 @@ import multiprocessing
 import sys
 import functools
 import time
+import subprocess
 
 
 def getReadRunInfo(ena_id):
@@ -441,9 +442,36 @@ def rename_move_files(list_files, new_name, outdir, download_paired_type):
     return run_successfully, list_new_files
 
 
+# @utils.trace_unhandled_exceptions
+def rename_header_sra(fastq):
+    run_successfully = False
+    try:
+        command = ['awk', '\'{if(NR%4==1) $0=gensub(/\./, \"/\", 2); print}\'', fastq, '|', 'gzip', '-1', '>', str(fastq + '.gz')]
+        print 'Running: ' + str(' '.join(command))
+        return_code = subprocess.call(' '.join(command), shell=True)
+        if return_code == 0:
+            run_successfully = True
+        else:
+            print 'Something went wrong with command: {command}'.format(commad=' '.join(command))
+    except Exception as e:
+        print e
+
+    return run_successfully
+
+
 def sra_2_fastq(download_dir, ena_id):
-    command = ['fastq-dump', '-I', '-O', download_dir, '--gzip', '--split-files', '{download_dir}{ena_id}.sra'.format(download_dir=download_dir, ena_id=ena_id)]
+    command = ['fastq-dump', '-I', '-O', download_dir, '--split-files', '{download_dir}{ena_id}.sra'.format(download_dir=download_dir, ena_id=ena_id)]
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
+    if run_successfully:
+        files = [os.path.join(download_dir, f) for f in os.listdir(download_dir) if not f.startswith('.') and os.path.isfile(os.path.join(download_dir, f)) and not f.endswith('.sra')]
+
+        pool = multiprocessing.Pool(processes=2)
+        results = []
+        p = pool.map_async(rename_header_sra, files, callback=results.extend)
+        p.wait()
+
+        run_successfully = all(results)
+
     return run_successfully
 
 
