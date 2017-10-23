@@ -4,6 +4,7 @@ import multiprocessing
 import sys
 import functools
 import time
+import subprocess
 
 
 def getReadRunInfo(ena_id):
@@ -443,8 +444,21 @@ def rename_move_files(list_files, new_name, outdir, download_paired_type):
 
 @utils.trace_unhandled_exceptions
 def rename_header_sra(fastq):
-    command = ['awk', "'{if(NR%4==1)", '$0=gensub(/./,', '"/",', '2);', "print}'", '|', 'gzip', '-1', '>', str(fastq + '.gz')]
-    run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, True, None, True)
+    command = ['awk', "'", "{if(NR%4==1)", '$0=gensub(/./,', '"/",', '2);', "print}'", '|', 'gzip', '-1', '>', str(fastq + '.gz')]
+    print 'Running: ' + str(' '.join(command))
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdout, stderr = proc.communicate()
+    if proc.returncode == 0:
+        run_successfully = True
+    else:
+        run_successfully = False
+        if len(stdout) > 0:
+            print 'STDOUT'
+            print stdout.decode("utf-8")
+        if len(stderr) > 0:
+            print 'STDERR'
+            print stderr.decode("utf-8")
+
     return run_successfully
 
 # awk '{if(NR%4==1) $0=gensub(/./, "/", 2); print}' | gzip -1 > teste.gz
@@ -467,7 +481,7 @@ def sra_2_fastq(download_dir, ena_id):
     command = ['fastq-dump', '-I', '-O', download_dir, '--split-files', '{download_dir}{ena_id}.sra'.format(download_dir=download_dir, ena_id=ena_id)]
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
     if run_successfully:
-        files = [os.path.join(download_dir, f) for f in os.listdir(download_dir) if not f.startswith('.') and os.path.isfile(os.path.join(download_dir, f))]
+        files = [os.path.join(download_dir, f) for f in os.listdir(download_dir) if not f.startswith('.') and os.path.isfile(os.path.join(download_dir, f)) and not f.endswith('.sra')]
 
         pool = multiprocessing.Pool(processes=2)
         results = []
