@@ -182,6 +182,8 @@ def checkPrograms(programs_version_dictionary):
                     stdout = stderr
                 if program == 'bunzip2':
                     version_line = stdout.splitlines()[0].rsplit(',', 1)[0].split(' ')[-1]
+                elif program == 'fastq-dump':
+                    version_line = stdout.splitlines()[1].split(' ')[-1]
                 else:
                     version_line = stdout.splitlines()[0].split(' ')[-1]
                 replace_characters = ['"', 'v', 'V', '+']
