@@ -8,7 +8,7 @@ getSeqENA.py - Get fastq files from ENA using ENA IDs
 
 Copyright (C) 2017 Miguel Machado <mpmachado@medicina.ulisboa.pt>
 
-Last modified: October 04, 2017
+Last modified: December 06, 2017
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import sys
 import utils
 import time
 
-version = '1.2'
+version = '1.3'
 
 
 def requiredPrograms(args):
