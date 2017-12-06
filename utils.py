@@ -182,11 +182,13 @@ def checkPrograms(programs_version_dictionary):
                     stdout = stderr
                 if program == 'bunzip2':
                     version_line = stdout.splitlines()[0].rsplit(',', 1)[0].split(' ')[-1]
-                elif program == 'fastq-dump':
+                elif program in ['wget', 'awk']:
+                    version_line = stdout.splitlines()[0].split(' ', 3)[2]
+                elif program in ['prefetch', 'fastq-dump']:
                     version_line = stdout.splitlines()[1].split(' ')[-1]
                 else:
                     version_line = stdout.splitlines()[0].split(' ')[-1]
-                replace_characters = ['"', 'v', 'V', '+']
+                replace_characters = ['"', 'v', 'V', '+', ',']
                 for i in replace_characters:
                     version_line = version_line.replace(i, '')
                 print program + ' (' + version_line + ') found'

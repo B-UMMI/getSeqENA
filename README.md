@@ -3,11 +3,12 @@
 
 
 #### Depedencies
-- Aspera Connect 2 >= v3.6.1
-- gzip >= v1.6 (normally found in Linux OS) (important for bam/cram conversion into fastq)
 - wget (normally found in Linux OS)
+- gzip >= v1.6 (normally found in Linux OS)
+- Aspera Connect 2 >= v3.6.1 (optional)
 - curl (optional)
-- [SRA toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software) >= v2.8.2 (optional)
+- [SRA toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software) >= v2.8.2 (optional) (for SRA interaction)
+- GNU Awk (optional) (normally found in Linux OS) (for SRA interaction)
 
 #### Input
  To interact directly with ENA, a list of IDs to download needs to be passed to getSeqENA. This can be done through the -l option, or to download all the reads from a given taxon, though the --taxon option.

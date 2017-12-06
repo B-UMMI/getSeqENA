@@ -36,12 +36,16 @@ version = '1.3'
 
 def requiredPrograms(args):
     programs_version_dictionary = {}
+    programs_version_dictionary['wget'] = ['--version', '>=', '1.12']
+    programs_version_dictionary['gzip'] = ['--version', '>=', '1.6']
     if args.asperaKey is not None:
         programs_version_dictionary['ascp'] = ['--version', '>=', '3.6.1']
     if args.downloadCramBam:
         programs_version_dictionary['samtools'] = ['--version', '==', '1.3.1']
     if args.SRA or args.SRAopt:
+        programs_version_dictionary['prefetch'] = ['--version', '>=', '2.8.2']
         programs_version_dictionary['fastq-dump'] = ['--version', '>=', '2.8.2']
+        programs_version_dictionary['awk'] = ['--version', '>=', '3.0.4']
     missingPrograms = utils.checkPrograms(programs_version_dictionary)
     if len(missingPrograms) > 0:
         sys.exit('\n' + 'Errors:' + '\n' + '\n'.join(missingPrograms))
