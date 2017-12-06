@@ -111,16 +111,12 @@ def downloadWithSRAprefetch(asperaKey, outdir, pickle_prefix, ena_id):
     command = ['prefetch', '', ena_id]
 
     if asperaKey is not None:
-        ignore, ascp, ignore = utils.runCommandPopenCommunicate(['which', 'ascp'], False, None, True)
-        command[1] = '-a \"{ascp}|{asperaKey}\"'.format(ascp=ascp.splitlines()[0], asperaKey=asperaKey)
+        ignore, ascp, ignore = utils.runCommandPopenCommunicate(['which', 'ascp'], False, None, False)
+        command[1] = '-a {ascp}|{asperaKey}'.format(ascp=ascp.splitlines()[0], asperaKey=asperaKey)
 
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
     if run_successfully:
-        ignore, prefetch_outdir, ignore = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, True)
-        print "AAAAAAAAA"
-        print os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra')
-        print "BBBBBBBBB"
-        print os.path.join(outdir, ena_id + '.sra')
+        ignore, prefetch_outdir, ignore = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, False)
         os.rename(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'), os.path.join(outdir, ena_id + '.sra'))
 
     utils.saveVariableToPickle(run_successfully, outdir, pickle_prefix + '.' + ena_id)
