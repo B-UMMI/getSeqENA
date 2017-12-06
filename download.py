@@ -107,6 +107,22 @@ def downloadWithWget(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
 
 
 @utils.trace_unhandled_exceptions
+def downloadWithSRAprefetch(asperaKey, outdir, pickle_prefix, ena_id):
+    command = ['prefetch', '', ena_id]
+
+    if asperaKey is not None:
+        ignore, ascp, ignore = utils.runCommandPopenCommunicate(['which', 'ascp'], False, None, False)
+        command[1] = '-a \"{ascp}|{asperaKey}\"'.format(ascp=ascp.splitlines()[0], asperaKey=asperaKey)
+
+    run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, False)
+    if run_successfully:
+        ignore, prefetch_outdir, ignore = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], False, None, True)
+        os.rename(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'), os.path.join(outdir, ena_id + '.sra'))
+
+    utils.saveVariableToPickle(run_successfully, outdir, pickle_prefix + '.' + ena_id)
+
+
+@utils.trace_unhandled_exceptions
 def downloadWithCurl(ftp_file_path, outdir, pickle_prefix, SRA, ena_id):
     command = ['curl', '--retry', '2', '', '-o', '']
     if not SRA:
@@ -183,12 +199,15 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
             downloadWithAspera(None, asperaKey, outdir, pickle_prefix, SRA or SRAopt, ena_id)
             run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
         if not run_successfully:
-            if curl_installed():
-                downloadWithCurl(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
-                run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+            downloadWithSRAprefetch(asperaKey, outdir, pickle_prefix, ena_id)
+            run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
             if not run_successfully:
-                downloadWithWget(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
-                run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+                if curl_installed():
+                    downloadWithCurl(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
+                    run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+                if not run_successfully:
+                    downloadWithWget(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
+                    run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
         if run_successfully:
             download_SRA = True
 
