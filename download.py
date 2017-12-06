@@ -208,6 +208,7 @@ def download(downloadInformation_type, asperaKey, outdir, SRA, SRAopt, ena_id):
                 if not run_successfully:
                     downloadWithWget(None, outdir, pickle_prefix, SRA or SRAopt, ena_id)
                     run_successfully = getPickleRunSuccessfully(outdir, pickle_prefix)
+
         if run_successfully:
             download_SRA = True
 
