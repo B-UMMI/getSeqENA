@@ -38,7 +38,7 @@ def getDownloadInformation(readRunInfo):
                 if len(info_line[i]) > 0:
                     files_path = info_line[i].split(';')
                     if len(files_path) > 2:
-                        print 'WARNING: Were found more files than expected in ' + header[1] + ' download links!'
+                        print 'WARNING: Were found more files than expected in {downloadInformation}-{download_types} download links!'.format(downloadInformation=header[0], download_types=header[1])
                     if downloadInformation[header[0]] is None:
                         downloadInformation[header[0]] = {}
                     downloadInformation[header[0]][header[1]] = files_path
@@ -111,12 +111,12 @@ def downloadWithSRAprefetch(asperaKey, outdir, pickle_prefix, ena_id):
     command = ['prefetch', '', ena_id]
 
     if asperaKey is not None:
-        ignore, ascp, ignore = utils.runCommandPopenCommunicate(['which', 'ascp'], False, None, False)
+        ignore, ascp, ignore = utils.runCommandPopenCommunicate(['which', 'ascp'], False, None, True)
         command[1] = '-a \"{ascp}|{asperaKey}\"'.format(ascp=ascp.splitlines()[0], asperaKey=asperaKey)
 
-    run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, False)
+    run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
     if run_successfully:
-        ignore, prefetch_outdir, ignore = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], False, None, True)
+        ignore, prefetch_outdir, ignore = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, True)
         print "AAAAAAAAA"
         print os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra')
         print "BBBBBBBBB"
