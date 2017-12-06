@@ -25,7 +25,7 @@ class Logger(object):
 
     def write(self, message):
         self.terminal.write(message)
-        self.log.write(message)
+        self.log.write(message.encode('utf-8'))
         self.log.flush()
 
     def flush(self):
