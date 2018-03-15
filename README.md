@@ -11,7 +11,7 @@
 - GNU Awk (optional) (normally found in Linux OS) (for SRA interaction)
 
 #### Input
- To interact directly with ENA, a list of IDs to download needs to be passed to getSeqENA. This can be done through the -l option, or to download all the reads from a given taxon, though the --taxon option.
+ To interact directly with ENA, a list of IDs to download needs to be passed to getSeqENA. This can be done through the -l option.
 
 #### Usage
 
