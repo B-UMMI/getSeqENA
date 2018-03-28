@@ -9,6 +9,7 @@
 - curl (optional)
 - [SRA toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software) >= v2.8.2 (optional) (for SRA interaction)
 - GNU Awk (optional) (normally found in Linux OS) (for SRA interaction)
+- Samtools = v1.3.1 (for cram/bam conversion)
 
 #### Input
  To interact directly with ENA, a list of IDs to download needs to be passed to getSeqENA. This can be done through the -l option.
