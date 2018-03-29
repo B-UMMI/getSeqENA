@@ -8,7 +8,7 @@
 - Aspera Connect 2 >= v3.6.1 (optional)
 - curl (optional)
 - [SRA toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software) >= v2.8.2 (optional) (for SRA interaction)
-- Samtools = [v1.3.1](https://github.com/samtools/samtools/releases/tag/1.3.1) (for fastq conversion when downloading BAM/CRAM files)
+- [Samtools = v1.3.1](https://github.com/samtools/samtools/releases/tag/1.3.1) (for fastq conversion when downloading BAM/CRAM files)
 - GNU Awk (optional) (normally found in Linux OS) (for SRA interaction)
 
 
