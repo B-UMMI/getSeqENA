@@ -45,7 +45,7 @@ def requiredPrograms(args):
     if args.SRA or args.SRAopt:
         programs_version_dictionary['prefetch'] = ['--version', '>=', '2.8.2']
         programs_version_dictionary['fastq-dump'] = ['--version', '>=', '2.8.2']
-        programs_version_dictionary['awk'] = ['--version', '>=', '3.0.4']
+        programs_version_dictionary['gawk'] = ['--version', '>=', '3.0.4']
     missingPrograms = utils.checkPrograms(programs_version_dictionary)
     if len(missingPrograms) > 0:
         sys.exit('\n' + 'Errors:' + '\n' + '\n'.join(missingPrograms))
