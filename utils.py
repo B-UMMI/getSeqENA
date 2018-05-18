@@ -182,7 +182,7 @@ def checkPrograms(programs_version_dictionary):
                     stdout = stderr
                 if program == 'bunzip2':
                     version_line = stdout.splitlines()[0].rsplit(',', 1)[0].split(' ')[-1]
-                elif program in ['wget', 'awk']:
+                elif program in ['wget', 'gawk']:
                     version_line = stdout.splitlines()[0].split(' ', 3)[2]
                 elif program in ['prefetch', 'fastq-dump']:
                     version_line = stdout.splitlines()[1].split(' ')[-1]
