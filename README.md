@@ -1,5 +1,5 @@
 ## getSeqENA
--- Download sequences from ENA database --
+-- Download sequences from ENA/SRA databases --
 
 
 #### Depedencies
@@ -37,7 +37,8 @@
     Facultative options:
       -o /output/directory/, --outdir /output/directory/
                             Path for output directory (default: .)
-      -j N, --threads N     Number of threads (default: 1)
+      -j N, --threads N     Number of threads for cram/bam to fastq conversion
+                            (default: 1)
       -a /path/to/asperaweb_id_dsa.openssh, --asperaKey /path/to/asperaweb_id_dsa.openssh
                             Tells getSeqENA.py to download fastq files from ENA
                             using Aspera Connect. With this option, the path to

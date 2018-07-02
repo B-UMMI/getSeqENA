@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 
 """
-getSeqENA.py - Get fastq files from ENA using ENA IDs
+getSeqENA.py - Get fastq files from ENA/SRA using Accession IDs
 <https://github.com/B-UMMI/getSeqENA/>
 
 Copyright (C) 2017 Miguel Machado <mpmachado@medicina.ulisboa.pt>
@@ -108,7 +108,7 @@ def runGetSeqENA(args):
 
 def main():
 
-    parser = argparse.ArgumentParser(prog='getSeqENA.py', description="Get fastq files from ENA using ENA IDs", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(prog='getSeqENA.py', description="Get fastq files from ENA/SRA using Accession IDs", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--version', help='Version information', action='version', version=str('%(prog)s v' + version))
 
     parser_required = parser.add_argument_group('Required options')
@@ -116,7 +116,7 @@ def main():
 
     parser_optional = parser.add_argument_group('Facultative options')
     parser_optional.add_argument('-o', '--outdir', type=str, metavar='/output/directory/', help='Path for output directory', required=False, default='.')
-    parser_optional.add_argument('-j', '--threads', type=int, metavar='N', help='Number of threads', required=False, default=1)
+    parser_optional.add_argument('-j', '--threads', type=int, metavar='N', help='Number of threads for cram/bam to fastq conversion', required=False, default=1)
     parser_optional.add_argument('-a', '--asperaKey', type=argparse.FileType('r'), metavar='/path/to/asperaweb_id_dsa.openssh', help='Tells getSeqENA.py to download fastq files from ENA using Aspera Connect. With this option, the path to Private-key file asperaweb_id_dsa.openssh is provided (normaly found in ~/.aspera/connect/etc/asperaweb_id_dsa.openssh).', required=False)
     parser_optional.add_argument('--downloadLibrariesType', type=str, metavar='PAIRED', help='Tells getSeqENA.py to download files with specific library layout', choices=['PAIRED', 'SINGLE', 'BOTH'], required=False, default='BOTH')
     parser_optional.add_argument('--downloadCramBam', action='store_true', help='Tells getSeqENA.py to also download cram/bam files and convert them to fastq files')
