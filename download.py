@@ -111,12 +111,19 @@ def downloadWithSRAprefetch(asperaKey, outdir, pickle_prefix, ena_id):
     command = ['prefetch', '', ena_id]
 
     if asperaKey is not None:
-        ignore, ascp, ignore = utils.runCommandPopenCommunicate(['which', 'ascp'], False, None, False)
+        _, ascp, _ = utils.runCommandPopenCommunicate(['which', 'ascp'], False, None, False)
         command[1] = '-a {ascp}|{asperaKey}'.format(ascp=ascp.splitlines()[0], asperaKey=asperaKey)
 
     run_successfully, stdout, stderr = utils.runCommandPopenCommunicate(command, False, 3600, True)
     if run_successfully:
-        ignore, prefetch_outdir, ignore = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, False)
+        _, prefetch_outdir, _ = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, False)
+
+        # TODO: remove these prints
+        print('==> prefetch_outdir', prefetch_outdir, "<==")
+        print('==> prefetch_outdir.splitlines()[0]', prefetch_outdir.splitlines()[0], "<==")
+        print('==> os.path.join(prefetch_outdir.splitlines()[0], ena_id + ".sra")', os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'), "<==")
+        print('==> os.path.join(outdir, ena_id + ".sra")', os.path.join(outdir, ena_id + '.sra'), "<==")
+
         os.rename(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'), os.path.join(outdir, ena_id + '.sra'))
 
     utils.saveVariableToPickle(run_successfully, outdir, pickle_prefix + '.' + ena_id)
@@ -413,8 +420,14 @@ def get_fastq_files(download_dir, cram_index_run_successfully, threads, download
                 cram_file = i
         run_successfully, downloaded_files = bamCram_2_fastq(cram_file, download_dir, threads, download_paired_type)
     else:
-        if len(downloaded_files) > 0:
+        if downloaded_files is not None and len(downloaded_files) > 0:
             run_successfully = True
+
+        # TODO: remove the else
+        else:
+            print('==> download_dir', download_dir, '<==')
+            print('==> downloaded_files', downloaded_files, '<==')
+            print('==> cram_index_run_successfully', cram_index_run_successfully, '<==')
 
     return run_successfully, downloaded_files
 
