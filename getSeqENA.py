@@ -87,7 +87,7 @@ def runGetSeqENA(args):
                 utils.check_create_directory(ena_id_folder)
 
                 sequencingInformation = {'run_accession': None, 'instrument_platform': None, 'instrument_model': None, 'library_layout': None, 'library_source': None, 'extra_run_accession': None, 'nominal_length': None, 'read_count': None, 'base_count': None, 'date_download': None}
-                time_taken, run_successfully, fastq_files, sequencingInformation = download.runDownload(ena_id, args.downloadLibrariesType, asperaKey, ena_id_folder, args.downloadCramBam, args.threads, args.downloadInstrumentPlatform, args.SRA, args.SRAopt)
+                time_taken, run_successfully, fastq_files, sequencingInformation = download.run_download(ena_id, args.downloadLibrariesType, asperaKey, ena_id_folder, args.downloadCramBam, args.threads, args.downloadInstrumentPlatform, args.SRA, args.SRAopt)
 
                 if run_successfully:
                     runs_successfully += 1
