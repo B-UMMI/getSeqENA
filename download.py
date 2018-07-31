@@ -125,14 +125,6 @@ def download_with_sra_prefetch(aspera_key, outdir, pickle_prefix, ena_id):
     if run_successfully:
         _, prefetch_outdir, _ = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, False)
 
-        # TODO: remove these prints
-        print('==> prefetch_outdir', prefetch_outdir, "<==")
-        print('==> prefetch_outdir.splitlines()[0]', prefetch_outdir.splitlines()[0], "<==")
-        print('==> os.path.join(prefetch_outdir.splitlines()[0], ena_id + ".sra")',
-              os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'),
-              "<==")
-        print('==> os.path.join(outdir, ena_id + ".sra")', os.path.join(outdir, ena_id + '.sra'), "<==")
-
         os.rename(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'), os.path.join(outdir, ena_id + '.sra'))
 
     utils.saveVariableToPickle(run_successfully, outdir, pickle_prefix + '.' + ena_id)
@@ -438,12 +430,6 @@ def get_fastq_files(download_dir, cram_index_run_successfully, threads, download
     else:
         if downloaded_files is not None and len(downloaded_files) > 0:
             run_successfully = True
-
-        # TODO: remove the else
-        else:
-            print('==> download_dir', download_dir, '<==')
-            print('==> downloaded_files', downloaded_files, '<==')
-            print('==> cram_index_run_successfully', cram_index_run_successfully, '<==')
 
     return run_successfully, downloaded_files
 
