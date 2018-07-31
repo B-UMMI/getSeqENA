@@ -24,7 +24,7 @@ class Logger(object):
         self.log = open(self.logfile, "w")
 
     def write(self, message):
-        self.terminal.write(message)
+        self.terminal.write(message.encode('utf-8'))
         self.log.write(message.encode('utf-8'))
         self.log.flush()
 
@@ -195,14 +195,18 @@ def checkPrograms(programs_version_dictionary):
                 if programs[program][1] == '>=':
                     program_found_version = version_line.split('.')
                     program_version_required = programs[program][2].split('.')
-                    if float('.'.join(program_found_version[0:2])) < float('.'.join(program_version_required[0:2])):
-                        listMissings.append('It is required ' + program + ' with version ' + programs[program][1] + ' ' + programs[program][2])
-                    elif float('.'.join(program_found_version[0:2])) == float('.'.join(program_version_required[0:2])):
-                        if len(program_version_required) == 3:
-                            if len(program_found_version) == 2:
-                                program_found_version.append(0)
-                            if program_found_version[2].split('_')[0] < program_version_required[2]:
-                                listMissings.append('It is required ' + program + ' with version ' + programs[program][1] + ' ' + programs[program][2])
+                    if len(program_version_required) == 3:
+                        if len(program_found_version) == 2:
+                            program_found_version.append(0)
+                        else:
+                            program_found_version[2] = program_found_version[2].split('_')[0]
+                    for i in range(0, len(program_version_required)):
+                        if int(program_found_version[i]) > int(program_version_required[i]):
+                            break
+                        elif int(program_found_version[i]) == int(program_version_required[i]):
+                            continue
+                        else:
+                            listMissings.append('It is required ' + program + ' with version ' + programs[program][1] + ' ' + programs[program][2])
                 else:
                     if version_line != programs[program][2]:
                         listMissings.append('It is required ' + program + ' with version ' + programs[program][1] + ' ' + programs[program][2])
