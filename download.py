@@ -481,7 +481,7 @@ def rename_move_files(list_files, new_name, outdir, download_paired_type):
 def rename_header_sra(fastq):
     run_successfully = False
     try:
-        command = ['awk', '\'{if(NR%4==1) $0=gensub(/\./, \"/\", 2); print}\'', fastq, '|', 'gzip', '-1', '>',
+        command = ['gawk', '\'{if(NR%4==1) $0=gensub(/\./, \"/\", 2); print}\'', fastq, '|', 'gzip', '-1', '>',
                    str(fastq + '.gz')]
         print('Running: ' + str(' '.join(command)))
         return_code = subprocess.call(' '.join(command), shell=True)
