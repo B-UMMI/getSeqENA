@@ -125,7 +125,18 @@ def download_with_sra_prefetch(aspera_key, outdir, pickle_prefix, ena_id):
     if run_successfully:
         _, prefetch_outdir, _ = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, False)
 
-        os.rename(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'), os.path.join(outdir, ena_id + '.sra'))
+        try:
+            os.rename(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'),
+                      os.path.join(outdir, ena_id + '.sra'))
+        except OSError as e:
+            print('Found the following error:'
+                  '{}'.format(e))
+
+            from shutil import copy as shutil_copy
+
+            shutil_copy(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'),
+                        os.path.join(outdir, ena_id + '.sra'))
+            os.remove(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'))
 
     utils.saveVariableToPickle(run_successfully, outdir, pickle_prefix + '.' + ena_id)
 
