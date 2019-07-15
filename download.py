@@ -5,6 +5,8 @@ import sys
 import functools
 import time
 import subprocess
+from shutil import move as shutil_move
+from shutil import copy as shutil_copy
 
 
 def get_read_run_info(ena_id):
@@ -126,13 +128,11 @@ def download_with_sra_prefetch(aspera_key, outdir, pickle_prefix, ena_id):
         _, prefetch_outdir, _ = utils.runCommandPopenCommunicate(['echo', '$HOME/ncbi/public/sra'], True, None, False)
 
         try:
-            os.rename(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'),
-                      os.path.join(outdir, ena_id + '.sra'))
+            shutil_move(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'),
+                        os.path.join(outdir, ena_id + '.sra'))
         except OSError as e:
             print('Found the following error:'
                   '{}'.format(e))
-
-            from shutil import copy as shutil_copy
 
             shutil_copy(os.path.join(prefetch_outdir.splitlines()[0], ena_id + '.sra'),
                         os.path.join(outdir, ena_id + '.sra'))
@@ -476,7 +476,7 @@ def rename_move_files(list_files, new_name, outdir, download_paired_type):
                     if os.path.isfile(list_files[i]):
                         os.remove(list_files[i])
                 else:
-                    os.rename(list_files[i], list_new_files[i])
+                    shutil_move(list_files[i], list_new_files[i])
             list_new_files = list_new_files.values()
         except Exception as e:
             print(e)
