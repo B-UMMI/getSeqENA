@@ -417,15 +417,20 @@ def bam_cram_2_fastq(alignment_file, outdir, threads, pair_end_type):
 def check_correct_links(download_information):
     for i in download_information:
         if download_information[i] is not None:
-            if download_information[i]['aspera'] is not None:
-                for j in range(0, len(download_information[i]['aspera'])):
-                    if download_information[i]['aspera'][j].startswith('fasp.sra.ebi.ac.uk/'):
-                        download_information[i]['aspera'][j] = download_information[i]['aspera'][j].replace(
-                            'fasp.sra.ebi.ac.uk/', 'fasp.sra.ebi.ac.uk:/', 1)
-            if download_information[i]['ftp'] is not None:
-                for j in range(0, len(download_information[i]['ftp'])):
-                    if '#' in download_information[i]['ftp'][j]:
-                        download_information[i]['ftp'][j] = download_information[i]['ftp'][j].replace('#', '%23')
+            try:
+                if 'aspera' in download_information[i].keys():
+                    for j in range(0, len(download_information[i]['aspera'])):
+                        if download_information[i]['aspera'][j].startswith('fasp.sra.ebi.ac.uk/'):
+                            download_information[i]['aspera'][j] = download_information[i]['aspera'][j].replace(
+                                'fasp.sra.ebi.ac.uk/', 'fasp.sra.ebi.ac.uk:/', 1)
+                if 'ftp' in download_information[i].keys():
+                    for j in range(0, len(download_information[i]['ftp'])):
+                        if '#' in download_information[i]['ftp'][j]:
+                            download_information[i]['ftp'][j] = download_information[i]['ftp'][j].replace('#', '%23')
+            except Exception as e:
+                print(e)
+                sys.exit(1)
+
     return download_information
 
 
